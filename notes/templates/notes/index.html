@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block head %}
+<style>
+    main {
+        max-width: 500px;
+    }
+</style>
+{% endblock head%}
+{% block content %}
+<main>
+    <form id="addNoteForm">
+        {% csrf_token %}
+        <table>
+            {{ note_form }}
+        </table>   
+        <button type="submit">Add Note</button>
+    </form>
+    
+    <div id="notes">
+        {% for note in page_obj %}
+        <div>
+            <a href="{% url 'notes:note_details' note.secondary_id %}">
+                {% if note.title %}
+                <h3>{{note.title}}</h3>
+                {% endif %}
+                <small>
+                    {{note.created|naturaltime}}
+                </small>
+            </a>
+                
+            <p>{{ note.body }}</p>
+            <br/>
+        </div>
+        {% endfor %}
+        </div>
+    
+</main>
+{% endblock content %}
+
+{% block script %}
+<script>
+    const addNoteForm = document.querySelector("#addNoteForm");
+    
+    addNoteForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const postData = Object.fromEntries(new FormData(event.target));
+        const csrftoken= postData['csrfmiddlewaretoken'];
+
+        
+        fetch('/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(postData) 
+        }).then(async (response)=> {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            if (response.status === 201) {
+                const data = await response.text();
+                const notes = document.querySelector("#notes");
+                notes.insertAdjacentHTML("afterbegin", data);
+                console.log(data);
+            } else if (response.status === 400) {
+                const data = response.text();
+                console.log(data);
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        }).catch(error => {
+            
+            console.error('There was a problem with the fetch operation:', error);
+        });
+
+    });
+
+</script>
+{% endblock script %}

@@ -1,0 +1,14 @@
+{% load humanize %}
+<div>
+    <a href="{% url 'notes:note_details' note.secondary_id %}">
+        {% if note.title %}
+        <h3>{{note.title}}</h3>
+        {% endif %}
+        <small>
+            {{note.created|naturaltime}}
+        </small>
+    </a>
+        
+    <p>{{ note.body }}</p>
+    <br/>
+</div>
