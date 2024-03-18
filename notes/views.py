@@ -42,5 +42,5 @@ def index(request: HttpRequest):
 
 
 
-def note_details(request):
+def note_details(request: HttpRequest, secondary_id:str):
     pass

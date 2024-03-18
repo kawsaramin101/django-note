@@ -1,0 +1,24 @@
+{% csrf_token %}
+<div class="form-container">
+    <div>
+        
+        {{ note_form.title }}
+        {% if note_form.title.errors %}
+        <ul>
+            {% for error in note_form.title.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div>
+        {{ note_form.body }}
+        {% if note_form.body.errors %}
+        <ul>
+            {% for error in note_form.body.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>

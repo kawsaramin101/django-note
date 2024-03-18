@@ -1,14 +1,15 @@
 {% load humanize %}
-<div>
+<div class="note">
     <a href="{% url 'notes:note_details' note.secondary_id %}">
-        {% if note.title %}
-        <h3>{{note.title}}</h3>
-        {% endif %}
-        <small>
-            {{note.created|naturaltime}}
-        </small>
+        <div class="note-inner">
+            
+            {% if note.title %}
+            <h3>{{note.title}}</h3>
+            {% endif %}
+            <small>
+                {{note.created|naturaltime}}
+            </small>
+            <p class="note-body">{{ note.body }}</p>
+        </div>
     </a>
-        
-    <p>{{ note.body }}</p>
-    <br/>
 </div>

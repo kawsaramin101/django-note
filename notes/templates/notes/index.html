@@ -2,34 +2,173 @@
 {% load static %}
 {% load humanize %}
 {% block head %}
+
 <style>
-    main {
-        max-width: 500px;
+    body {
+        background-color: #f4f3f3;
+        padding: 16px;
     }
+    .notes {
+        margin: 0 auto;
+    }
+    .note {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+    @media screen and (min-width: 560px) {
+        .note {
+            width: 33.33%;
+        }
+    }
+    @media screen and (min-width: 816px) {
+        .note {
+            width: 25%;
+        }
+    }
+    @media screen and (min-width: 1072px) {
+        .note {
+            width: 20%;
+        }
+    }
+    .note-inner {
+        background-color: #fff;
+        min-height: 4em;
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+        transition: box-shadow 0.2s;
+    }
+    .note:hover .note-inner {
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    a {
+        color: inherit; 
+        text-decoration: none; 
+    }
+
+    a:hover,
+    a:active,
+    a:visited {
+        color: inherit; 
+        text-decoration: none;
+    }
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    .note-body {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    .form-container {
+        border: 1px solid #ccc; 
+        border-radius: 10px;
+    }
+
+    .form-container:focus-within {
+        border: 2px solid #64c2ed;
+        border-radius: 10px;
+    }
+
+    #id_title, #id_body {
+        border: none; 
+        width: 100%; 
+        padding: 10px;
+        box-sizing: border-box; 
+        font-size: 16px;
+    }
+
+    #id_title:focus-within,  #id_body:focus-within {
+        outline: none;
+    }
+
+    #id_body {
+        resize: vertical; 
+        height: 100px; 
+    }
+
+    .addNoteButton {
+        margin-top: 8px;
+        display: inline-block;
+        outline: none;
+        border-width: 0px;
+        border-radius: 3px;
+        box-sizing: border-box;
+        font-size: inherit;
+        font-weight: 500;
+        max-width: 100%;
+        text-align: center;
+        text-decoration: none;
+        transition: background 0.1s ease-out 0s, box-shadow 0.15s cubic-bezier(0.47, 0.03, 0.49, 1.38) 0s;
+        background: rgb(0, 82, 204);
+        cursor: pointer;
+        height: 32px;
+        line-height: 32px;
+        padding: 0px 12px;
+        vertical-align: middle;
+        width: auto;
+        font-size: 14px;
+        color: rgb(255, 255, 255);
+    }
+
+    .addNoteButton:hover {
+        background: rgb(0, 101, 255);
+        text-decoration: inherit;
+        transition-duration: 0s, 0.15s;
+        color: rgb(255, 255, 255);
+    }
+
+    .centered-form {
+        display: flex;
+        justify-content: center; 
+        text-align: center;
+    }
+
+    .centered-button {
+        display: inline-block; 
+    }
+    
 </style>
 {% endblock head%}
 {% block content %}
 <main>
-    <form id="addNoteForm">
-        {% csrf_token %}
-        <table>
-            {{ note_form }}
-        </table>   
-        <button type="submit">Add Note</button>
-    </form>
+    <div class="centered-form">
+        <form id="addNoteForm">
+            {% include 'notes/partials/note-form.html' %}
+            <button type="submit" class="addNoteButton centered-button">Add Note</button>
+        </form>
+    </div> 
     
-    <div id="notes">
+    <div id="notes" class="notes">
         {% for note in page_obj %}
         {% include 'notes/partials/note.html' %}
-        </div>
         {% endfor %}
-        </div>
+    </div>
     
 </main>
 {% endblock content %}
 
 {% block script %}
+<script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
 <script>
+
+    function renderMasonry() {
+        const iso = new Isotope('.notes');
+
+        iso.layout({
+            itemSelector: '.note',
+            layoutMode: 'masonry'
+        });
+    }
+
+    addEventListener("DOMContentLoaded", (event) => {
+        renderMasonry();
+    });
+
+
+
     const addNoteForm = document.querySelector("#addNoteForm");
     
     addNoteForm.addEventListener("submit", (event) => {
@@ -54,7 +193,7 @@
                 const data = await response.text();
                 const notes = document.querySelector("#notes");
                 notes.insertAdjacentHTML("afterbegin", data);
-                console.log(data);
+                renderMasonry();
             } else if (response.status === 400) {
                 const data = response.text();
                 console.log(data);

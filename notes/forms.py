@@ -8,3 +8,9 @@ class NoteForm(forms.ModelForm):
     class Meta:
         model = Note
         fields = ["title", "body"]
+
+        widgets = {
+            'title': forms.TextInput(attrs={'placeholder': 'Title'}),
+            'body': forms.Textarea(
+                attrs={'placeholder': 'Body'}),
+        }
